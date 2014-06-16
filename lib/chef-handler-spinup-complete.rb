@@ -34,10 +34,14 @@ class Chef
       end
 
       def report
-        sock = TCPSocket.new('127.0.0.1', 3030)
-        sock.write(warn_first)
-        sock.write(ok_second)
-        sock.close
+        begin
+          sock = TCPSocket.new('127.0.0.1', 3030)
+          sock.write(warn_first)
+          sock.write(ok_second)
+          sock.close
+        rescue Errno::ECONNREFUSED
+          Chef::Log.error("Couldn't write to the Sensu client socket")
+        end
       end
 
       private
