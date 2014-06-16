@@ -1,5 +1,5 @@
 # chef-handler-spinup-complete.rb
-# 
+#
 # Author: Simple Finance <ops@simple.com>
 # License: Apache License, Version 2.0
 #
@@ -34,6 +34,11 @@ class Chef
       end
 
       def report
+        # This sleep is to avoid Sensu client having been restarted as the last
+        # notification of the Chef run and this handler running immediately
+        # during the reporting phase. In that case, the handler will run too
+        # quickly and get a ECONNREFUSED.
+        sleep(1)
         begin
           sock = TCPSocket.new('127.0.0.1', 3030)
           sock.write(warn_first)
